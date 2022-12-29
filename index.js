@@ -4,8 +4,8 @@ let image = new Image();
 image.src = "kon.png";
 let imageSize = 60;
 
-let boundaryWidth = 80;
-let boundaryHeight = 80;
+let boundaryWidth = 90;
+let boundaryHeight = 90;
 
 const c = canvas.getContext("2d");
 
@@ -33,13 +33,7 @@ class Player {
   }
 
   draw() {
-    c.drawImage(
-      image,
-      this.position.x,
-      this.position.y,
-      imageSize,
-      imageSize
-    );
+    c.drawImage(image, this.position.x, this.position.y, imageSize, imageSize);
   }
 
   update() {
@@ -53,14 +47,17 @@ const boundaries = [];
 
 const player = new Player({
   position: {
-    x: boundaryWidth,
-    y: boundaryHeight
+    x: boundaryWidth + (boundaryWidth - imageSize) / 2,
+    y: boundaryHeight + (boundaryHeight - imageSize) / 2,
   },
   velocity: {
     x: 0,
     y: 0,
   },
 });
+
+console.log(player.position.x);
+console.log(player.position.y);
 
 const keys = {
   w: {
@@ -105,10 +102,21 @@ map.forEach((row, i) => {
 });
 
 function animate() {
-  requestAnimationFrame(animate);
+  reqAnim = window.requestAnimationFrame(animate);
   c.clearRect(0, 0, canvas.width, canvas.height);
   boundaries.forEach((boundary) => {
     boundary.draw();
+
+    let distance = (boundaryWidth - imageSize) / 2;
+
+    if (
+      player.position.y + distance >= boundary.position.y + boundaryHeight &&
+      player.position.x + distance >= boundary.position.x &&
+      player.position.y + distance <= boundary.position.y + boundaryHeight &&
+      player.position.x - distance <= boundary.position.x + boundaryWidth
+    ) {
+      console.log("colliding");
+    }
   });
 
   player.update();
@@ -129,6 +137,9 @@ function animate() {
 animate();
 
 window.addEventListener("keydown", ({ key }) => {
+  let distance = (boundaryWidth - imageSize) / 2;
+  console.log(player.position.x - distance);
+  console.log(player.position.y - distance);
   switch (key) {
     case "w":
       keys.w.pressed = true;

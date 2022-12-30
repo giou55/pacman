@@ -29,11 +29,20 @@ class Player {
   constructor({ position, velocity }) {
     this.position = position;
     this.velocity = velocity;
-    this.size = imageSize;
+    this.radius = 30;
+    //this.size = imageSize;
   }
 
+  // draw() {
+  //   c.drawImage(image, this.position.x, this.position.y, imageSize, imageSize);
+  // }
+
   draw() {
-    c.drawImage(image, this.position.x, this.position.y, imageSize, imageSize);
+    c.beginPath();
+    c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+    c.fillStyle = 'yellow';
+    c.fill();
+    c.closePath();
   }
 
   update() {
@@ -45,19 +54,27 @@ class Player {
 
 const boundaries = [];
 
+// const player = new Player({
+//   position: {
+//     x: boundaryWidth + (boundaryWidth - imageSize) / 2,
+//     y: boundaryHeight + (boundaryHeight - imageSize) / 2,
+//   },
+//   velocity: {
+//     x: 0,
+//     y: 0,
+//   },
+// });
+
 const player = new Player({
   position: {
-    x: boundaryWidth + (boundaryWidth - imageSize) / 2,
-    y: boundaryHeight + (boundaryHeight - imageSize) / 2,
+    x: boundaryWidth + boundaryWidth / 2,
+    y: boundaryHeight + boundaryHeight / 2,
   },
   velocity: {
     x: 0,
     y: 0,
   },
 });
-
-console.log(player.position.x);
-console.log(player.position.y);
 
 const keys = {
   w: {
@@ -79,7 +96,7 @@ let lastKey = "";
 const map = [
   ["-", "-", "-", "-", "-", "-", "-"],
   ["-", " ", " ", " ", " ", " ", "-"],
-  ["-", " ", "-", "-", "-", " ", "-"],
+  ["-", " ", "-", " ", "-", " ", "-"],
   ["-", " ", " ", " ", " ", " ", "-"],
   ["-", "-", "-", "-", "-", "-", "-"],
 ];
@@ -110,18 +127,20 @@ function animate() {
     let distance = (boundaryWidth - imageSize) / 2;
 
     if (
-      player.position.y + distance >= boundary.position.y + boundaryHeight &&
-      player.position.x + distance >= boundary.position.x &&
-      player.position.y + distance <= boundary.position.y + boundaryHeight &&
-      player.position.x - distance <= boundary.position.x + boundaryWidth
+      player.position.y - player.radius + player.velocity.y <= boundary.position.y + boundaryHeight &&
+      player.position.x + player.radius + player.velocity.x >= boundary.position.x &&
+      player.position.y + player.radius + player.velocity.y >= boundary.position.y &&
+      player.position.x - player.radius + player.velocity.x <= boundary.position.x + boundaryWidth
     ) {
       console.log("colliding");
+      player.velocity.y = 0;
+      player.velocity.x = 0;
     }
   });
 
   player.update();
-  player.velocity.y = 0;
-  player.velocity.x = 0;
+  // player.velocity.y = 0;
+  // player.velocity.x = 0;
 
   if (keys.w.pressed && lastKey === "w") {
     player.velocity.y = -5;
@@ -137,9 +156,6 @@ function animate() {
 animate();
 
 window.addEventListener("keydown", ({ key }) => {
-  let distance = (boundaryWidth - imageSize) / 2;
-  console.log(player.position.x - distance);
-  console.log(player.position.y - distance);
   switch (key) {
     case "w":
       keys.w.pressed = true;

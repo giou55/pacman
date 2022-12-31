@@ -225,7 +225,7 @@ function animate() {
 
   boundaries.forEach((boundary) => {
     boundary.draw();
-    //let distance = (boundaryWidth - imageSize) / 2;
+    //let distance = (boundaryWidth - imageSize) / 2; (for player image)
     if (
       circleCollidesWithRectangle({
         circle: player,

@@ -1,6 +1,13 @@
 const canvas = document.querySelector("canvas");
 const scoreElement = document.querySelector("#scoreElement");
 
+const gameOverSound = new Audio("./sounds/gameOver.wav");
+const gameWinSound = new Audio("./sounds/gameWin.wav");
+const eatGhostSound = new Audio("./sounds/eat_ghost.wav");
+const powerupSound = new Audio("./sounds/power_dot.wav");
+powerupSound.loop = true;
+const wakaSound = new Audio("./sounds/waka.wav");
+
 const c = canvas.getContext("2d");
 
 canvas.width = innerWidth;
@@ -532,9 +539,11 @@ function animate() {
     ) 
     {
       if (ghost.scared) {
+        eatGhostSound.play();
         ghosts.splice(i, 1);
       } else {
         cancelAnimationFrame(animationId);
+        gameOverSound.play();
         console.log("You lose");
       }
     }
@@ -543,6 +552,7 @@ function animate() {
   // win condition goes here
   if (pellets.length === 0) {
     cancelAnimationFrame(animationId);
+    gameWinSound.play();
     console.log("You win");
   }
 
@@ -561,12 +571,14 @@ function animate() {
     ) 
     {
       powerUps.splice(i, 1);
+      if (ghosts.length > 0) powerupSound.play();
 
       // make ghosts scared
       ghosts.forEach((ghost) => {
         ghost.scared = true;
         setTimeout(() => {
           ghost.scared = false;
+          powerupSound.pause();
         }, 5000)
       })
     }
@@ -584,6 +596,7 @@ function animate() {
     ) 
     {
       pellets.splice(i, 1);
+      wakaSound.play();
       score += 10;
       scoreElement.innerHTML = score;
     }
